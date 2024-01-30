@@ -16,10 +16,11 @@ public class Territory : MonoBehaviour
     [Space(10)]
     [Header("<b>Sound</b>")]
     [Space(4)]
-    private AudioSource audioSource;
     public AudioClip takingTerritory;
     public AudioClip territoryDeployement;
     public AudioClip territoryUnlayable;
+
+    private AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -70,5 +71,11 @@ public class Territory : MonoBehaviour
         {
             Debug.Log("No AudioClip have been detected");
         }
+    }
+
+    void InstantiateTroop(GameObject troop)
+    {
+        // We will instantiate Troop each time the slider end getting the range of the territory
+        Instantiate(troop, transform.position, Quaternion.identity);
     }
 }
