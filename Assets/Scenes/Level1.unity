@@ -426,7 +426,7 @@ LineRenderer:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
-    numCapVertices: 50
+    numCapVertices: 90
     alignment: 0
     textureMode: 0
     textureScale: {x: 1, y: 1}
@@ -448,8 +448,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bad302a66411d545bf254fdbf68d669, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedGrowth: 1
-  transformTerritory: {fileID: 2031313324}
+  circleScale: 5
+  territory: {fileID: 2031313324}
 --- !u!1 &2031313324
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +483,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vitesseDeplacement: 25
-  minions: {fileID: 0}
+  recoveryTime: 1
+  minions: {fileID: 8759740514805692771, guid: a02cd1d8217767f4082b3c144e5f9ccd, type: 3}
+  spawnInterval: 1
+  territoryCircle: {fileID: 1749765359}
+  innerRadius: 10
   takingTerritory: {fileID: 8300000, guid: 40c1c1eb99d73034ab186ea4c38870af, type: 3}
   territoryDeployement: {fileID: 8300000, guid: 60208d091cb027a4fbbb1d4039d9bab7, type: 3}
   territoryUnlayable: {fileID: 0}
@@ -544,8 +548,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Color: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -589,9 +593,9 @@ BoxCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
-    border: {x: 0.049999997, y: 0.049999997, z: 0.049999997, w: 0.049999997}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.16}
+    oldSize: {x: 0.2, y: 0.2}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
