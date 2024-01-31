@@ -51,6 +51,9 @@ public class Territory : MonoBehaviour
     private float currentTime;
     // Start is called before the first frame update
 
+    //get last position
+    private Vector3 lastPosition;
+
     private void Awake()
     {
         healthBar = GetComponentInChildren<FloatingHealthBar>();
@@ -120,8 +123,13 @@ public class Territory : MonoBehaviour
         }
     }
 
+    #region MouseEvent
+
     private void OnMouseDown()
     {
+
+        lastPosition = transform.position; // set lastPosition when we take the territory
+
         PlaySoundOneShot(takingTerritory);
 
         // Make it impossible to spawn on mouse drag
@@ -136,6 +144,19 @@ public class Territory : MonoBehaviour
 
     private void OnMouseUp()
     {
+        // Check if the territory is over the "Environment" layer
+        int environmentLayer = LayerMask.NameToLayer("Environment");
+        float checkRadius = 0.5f; // Adjust the radius as needed
+
+        // Check if there is an object on the "Environment" layer within the specified radius of the territory's position
+        Collider2D hitCollider = Physics2D.OverlapCircle(transform.position, checkRadius, 1 << environmentLayer);
+
+        if (hitCollider != null)
+        {
+            // If colliding with the "Environment" layer, update the territory position to the last position
+            transform.position = lastPosition;
+        }
+
         PlaySoundOneShot(territoryDeployement);
 
         // Activate Spawning
@@ -168,7 +189,9 @@ public class Territory : MonoBehaviour
         
         // Debug.Log("Position de la souris : " + worldMousePosition);
     }
-    
+
+    #endregion
+
     private void PlaySoundOneShot(AudioClip sound)
     {
         if (audioSource != null)
