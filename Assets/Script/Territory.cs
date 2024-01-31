@@ -4,38 +4,70 @@ using UnityEngine;
 
 public class Territory : MonoBehaviour
 {
-    [Header ("<b>Player Parameter</b>")]
-    [Space (4)]
+    #region PlayerParameter
+
+    [Header ("Speed")]
+    [Space (1)]
     [SerializeField] float moveSpeed;
     public float recoveryTime = 1.0f;
-    [SerializeField] float health, maxHealth = 3f;
-
     [Space(10)]
-    [Header("<b>UI</b>")]
+
+    #endregion
+
+    #region HP
+
+    [Space(4)]
+    [Header("HP")]
+    [Space(1)]
+    [SerializeField] float health, maxHealth = 3f;
+    [Space(10)]
+
+    #endregion
+
+    #region UI
+
+    [Header("Sliders")]
     [Space(4)]
     [SerializeField] FloatingHealthBar healthBar;
     [SerializeField] FloatingProductionBar productionBar;
     [SerializeField] FloatingRecoveryBar recoveryBar;
-
     [Space(10)]
-    [Header("<b>Invoke</b>")]
-    [Space(4)]
+
+    #endregion
+
+    #region Invoke
+
+    [Header("Minions")]
+    [Space(1)]
     public GameObject minions;
     public float spawnInterval = 5.0f;
-
     [Space(10)]
-    [Header("<b>Game Object</b>")]
-    [Space(4)]
+
+    #endregion
+
+    #region GameObject
+
+    [Header("Circle Reference")]
+    [Space(1)]
     public GameObject territoryCircle;
     [Tooltip("This is the inner radius, Game Object will not spawn inside the center of the spawnRadius")]
     public float innerRadius = 1.0f;
-
     [Space(10)]
-    [Header("<b>Sound</b>")]
-    [Space(4)]
+
+    #endregion
+
+    #region Sounds
+
+    [Header("Sound")]
+    [Space(1)]
     public AudioClip takingTerritory;
     public AudioClip territoryDeployement;
     public AudioClip territoryUnlayable;
+    [Space(10)]
+
+    #endregion
+
+    #region PrivateVar
 
     // Private Audio
     private AudioSource audioSource;
@@ -53,6 +85,8 @@ public class Territory : MonoBehaviour
 
     //get last position
     private Vector3 lastPosition;
+
+    #endregion
 
     private void Awake()
     {
