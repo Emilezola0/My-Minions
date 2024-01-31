@@ -6,8 +6,16 @@ public class Territory : MonoBehaviour
 {
     [Header ("<b>Player Parameter</b>")]
     [Space (4)]
-    public float vitesseDeplacement;
+    [SerializeField] float moveSpeed;
     public float recoveryTime = 1.0f;
+    [SerializeField] float health, maxHealth = 3f;
+
+    [Space(10)]
+    [Header("<b>UI</b>")]
+    [Space(4)]
+    [SerializeField] FloatingHealthBar healthBar;
+    [SerializeField] FloatingProductionBar productionBar;
+    [SerializeField] FloatingRecoveryBar recoveryBar;
 
     [Space(10)]
     [Header("<b>Invoke</b>")]
@@ -42,11 +50,30 @@ public class Territory : MonoBehaviour
     // Time
     private float currentTime;
     // Start is called before the first frame update
+
+    private void Awake()
+    {
+        healthBar = GetComponentInChildren<FloatingHealthBar>();
+        productionBar = GetComponentInChildren<FloatingProductionBar>();
+    }
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
         lineRenderer = territoryCircle.GetComponent<LineRenderer>();
-        
+
+        // Update health bar hp on start
+        health = maxHealth;
+        healthBar.UpdateHealthBar(health, maxHealth);
+
+        // Set Spawning UI
+        currentTime = spawnInterval;
+
+        // Set RecoveryTime Inactive (only activate on use)
+        timeSinceMouseUp = 0;
+        recoveryBar.UpdateRecoveryBar(timeSinceMouseUp, recoveryTime);
+        recoveryBar.gameObject.SetActive(false);
+
         // Calculate Spawn Radius
         CalculateSpawnRadius();
 
@@ -59,6 +86,7 @@ public class Territory : MonoBehaviour
         {
             if (canSpawn == true)
             {
+                timeSinceMouseUp = 0;
                 // If the invocation time has elapsed
                 if (currentTime <= 0)
                 {
@@ -71,6 +99,7 @@ public class Territory : MonoBehaviour
                 {
                     // Decrement invocation time
                     currentTime -= Time.deltaTime;
+                    productionBar.UpdateProductionBar(currentTime, spawnInterval);
                 }
             }
             // If you cannot summon, count the time since the last minion.
@@ -80,20 +109,26 @@ public class Territory : MonoBehaviour
                 if (timeSinceMouseUp > recoveryTime)
                 {
                     canSpawn = true;
+                    recoveryBar.gameObject.SetActive(false);
                 }
                 else
                 {
                     timeSinceMouseUp += Time.deltaTime;
+                    recoveryBar.UpdateRecoveryBar(timeSinceMouseUp, recoveryTime);
                 }
             }
         }
     }
+
     private void OnMouseDown()
     {
         PlaySoundOneShot(takingTerritory);
 
         // Make it impossible to spawn on mouse drag
         canSpawn = false;
+
+        // Reset Timer of Recovery
+        timeSinceMouseUp = 0;
 
         // Calculate Spawn Radius
         CalculateSpawnRadius();
@@ -113,7 +148,9 @@ public class Territory : MonoBehaviour
 
         isMouseDragging = false; // Reset isMouseDragging to false after MouseUp
 
+        recoveryBar.gameObject.SetActive(true); // make recovery bar visible
     }
+    
     private void OnMouseDrag()
     {
         isMouseDragging = true;
@@ -127,11 +164,12 @@ public class Territory : MonoBehaviour
         worldMousePosition_.z = 0;
         
         // Assign the Position to the object and Lerp by the Vitesse Deplacement
-        transform.position = Vector3.Lerp(transform.position, worldMousePosition_, vitesseDeplacement * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, worldMousePosition_, moveSpeed * Time.deltaTime);
         
         // Debug.Log("Position de la souris : " + worldMousePosition);
     }
-    void PlaySoundOneShot(AudioClip sound)
+    
+    private void PlaySoundOneShot(AudioClip sound)
     {
         if (audioSource != null)
         {
@@ -146,49 +184,24 @@ public class Territory : MonoBehaviour
             Debug.Log("No AudioClip have been detected");
         }
     }
-    void CalculateSpawnRadius()
+    
+    private void CalculateSpawnRadius()
     {
         // Calculate the spawnRadius depending of the size of the circle
         float circleRadius = lineRenderer.startWidth / 2f;
         spawnRadius = circleRadius;
     }
 
-    void InstantiateTroop(GameObject troop)
+    private void InstantiateTroop(GameObject troop)
     {
-        // Get a random point inside the line renderer
-        Vector3 randomPoint_ = GetRandomPointOnLine(lineRenderer, Random.Range(innerRadius, 1f - innerRadius));
+        // Get a random angle within the circular sector
+        float randomAngle = Random.Range(0f, 360f);
 
-        // Ajust Position by adding the inner plage
-        Vector3 spawnPosition_ = randomPoint_ + (Vector3)(Random.insideUnitCircle * spawnRadius);
+        // Calculate the spawn position based on the random angle, inner, and outer radii
+        Vector3 spawnPosition_ = transform.position + Quaternion.Euler(0f, 0f, randomAngle) * Vector3.right * Random.Range(innerRadius, spawnRadius);
 
-        // We will instantiate Troop each time the slider end getting the range of the territory
+        // We will instantiate Troop each time the slider ends, getting the range of the territory
         Instantiate(troop, spawnPosition_, Quaternion.identity);
-    }
-
-    Vector3 GetRandomPointOnLine(LineRenderer line, float t)
-    {
-        Vector3 lineStart = line.GetPosition(0);
-        Vector3 lineEnd = line.GetPosition(line.positionCount - 1);
-
-        float lineWidth = line.startWidth;
-        float randomOffset = Random.Range(-lineWidth / 2f, lineWidth / 2f);
-
-        // Adjust t based on inner radius
-        float adjustedT = Mathf.Clamp01(t * (1.0f - 2.0f * innerRadius));
-
-        // Get the random point on the adjusted line
-        Vector3 randomPointOnLine = Vector3.Lerp(lineStart, lineEnd, adjustedT);
-
-        // Rejection sampling to get a point within the circle
-        Vector2 randomPoint;
-        do
-        {
-            float angle = Random.Range(0f, 360f);
-            float radius = innerRadius + randomOffset;
-            randomPoint = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * radius;
-        } while (Vector2.Distance(randomPoint, Vector2.zero) > innerRadius);
-
-        return randomPointOnLine + new Vector3(randomPoint.x, randomPoint.y, 0f);
     }
 
     private void OnDrawGizmos()
@@ -200,5 +213,22 @@ public class Territory : MonoBehaviour
     {
         Gizmos.color = Color.red; // You can choose any color
         Gizmos.DrawWireSphere(transform.position, innerRadius);
+    }
+
+    private void TakeDamage(float damageAmount)
+    {
+        health -= damageAmount;
+        healthBar.UpdateHealthBar(health, maxHealth); // Update health bar hp
+        // Check if we are dead
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        // Make effect of explosion like the territory is detroy
+        // Spawn UI like Game Over if it's the last territory
     }
 }
