@@ -6,6 +6,11 @@ using UnityEngine;
 public class EnemyTargeting : MonoBehaviour
 {
     [SerializeField] AIDestinationSetter aIDestinationSetter;
+    
+    [Space(5)]
+    [Header("<b>Choose Target with :</b>")]
+    [Space(2)]
+
     [SerializeField] private string[] targetTags; // Add your desired tags to this array
     [SerializeField] private LayerMask targetLayer; // Change this to your desired layer
 
