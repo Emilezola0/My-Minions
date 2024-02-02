@@ -10,6 +10,8 @@ public class Territory : MonoBehaviour
     [Space(1)]
     [SerializeField] float moveSpeed;
     public float recoveryTime = 1.0f;
+    // Add a public variable for the speed progression factor
+    public float speedProgressionFactor = 0.1f;
     [Space(10)]
 
     #endregion
@@ -128,19 +130,22 @@ public class Territory : MonoBehaviour
             if (canSpawn == true)
             {
                 timeSinceMouseUp = 0;
+
+                // Calculate the current spawn interval based on the level and progression factor
+                float currentSpawnInterval = spawnInterval - (circleController.level * speedProgressionFactor);
+
                 // If the invocation time has elapsed
                 if (currentTime <= 0)
                 {
-                    currentTime = spawnInterval;
+                    currentTime = currentSpawnInterval;
                     // Invoke Minions
                     InstantiateTroop(minions, transform);
-
                 }
                 else
                 {
                     // Decrement invocation time
                     currentTime -= Time.deltaTime;
-                    productionBar.UpdateProductionBar(currentTime, spawnInterval);
+                    productionBar.UpdateProductionBar(currentTime, currentSpawnInterval);
                 }
             }
             // If you cannot summon, count the time since the last minion.
@@ -370,6 +375,8 @@ public class Territory : MonoBehaviour
     }
 
     #endregion
+
+    // ProcessGold trigger also the Upgrade Territory inside the CircleController.cs
     private void ProcessGold(float goldAmount)
     {
         // Implement the logic to process gold here

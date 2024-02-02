@@ -766,8 +766,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   circleScale: 5
-  upgradeStep: 0.5
   territory: {fileID: 2339758958677007716}
+  cleanseLevel: 10
+  upgradeStep: 0.5
+  cleanseTags:
+  - Minion
+  - Wall
+  - Wood
+  - Rock
 --- !u!120 &3587527321882790512
 LineRenderer:
   serializedVersion: 2

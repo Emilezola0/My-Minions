@@ -42,6 +42,12 @@ public class TerritoryEditor : Editor
             {
                 EditorGUILayout.PropertyField(maxHealthProp);
             }
+
+            SerializedProperty speedProgressionFactorProp = serializedObject.FindProperty("speedProgressionFactor");
+            if (speedProgressionFactorProp != null)
+            {
+                EditorGUILayout.PropertyField(speedProgressionFactorProp);
+            }
         }
 
         // UI

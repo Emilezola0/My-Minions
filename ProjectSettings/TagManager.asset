@@ -8,6 +8,7 @@ TagManager:
   - Wood
   - Minion
   - Gold
+  - Wall
   layers:
   - Default
   - TransparentFX
