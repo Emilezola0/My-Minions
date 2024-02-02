@@ -13,12 +13,22 @@ public class MinionTargeting : MonoBehaviour
 
     [SerializeField] private string[] targetTags; // Add your desired tags to this array
     [SerializeField] private LayerMask targetLayer; // Change this to your desired layer
+    [SerializeField] Transform territory; // Reference to the territory transform
     [SerializeField] private float goldAmount;
 
-
-    private void CustomUpdate()
+    private void Update()
     {
-        FindNearestTarget();
+        // If the minion has gold, return to territory
+        if (HasGold())
+        {
+            ReturnToTerritory();
+            // Optionally, you can add other logic here based on having gold
+        }
+        else
+        {
+            // If the minion doesn't have gold, find the nearest target as before
+            FindNearestTarget();
+        }
     }
 
     private void FindNearestTarget()
@@ -56,6 +66,16 @@ public class MinionTargeting : MonoBehaviour
         }
     }
 
+    public void ReturnToTerritory()
+    {
+        // Check if the current target is not the territory
+        if (aIDestinationSetter.target != territory)
+        {
+            // Set the destination to the territory's position
+            aIDestinationSetter.target = territory;
+        }
+    }
+
     public bool HasGold()
     {
         // Implement the logic to check if the minion has gold
@@ -74,5 +94,29 @@ public class MinionTargeting : MonoBehaviour
         // Implement the logic to remove gold from the minion
         // For example, set goldAmount to 0
         goldAmount = 0;
+    }
+
+    public void ReceiveGold(float amount)
+    {
+        // Implement the logic to receive gold and add it to the current goldAmount
+        goldAmount += amount;
+    }
+
+    public void ReturnToTerritoryWithGold()
+    {
+        // Check if the current target is not the territory
+        if (aIDestinationSetter.target != territory)
+        {
+            // Set the destination to the territory's position
+            aIDestinationSetter.target = territory;
+        }
+
+        // Add the logic here to handle other aspects of returning to territory with gold
+        // For example, you might want to perform specific actions when returning to territory with gold
+    }
+
+    public void SetTarget(Transform target)
+    {
+        territory = target;
     }
 }

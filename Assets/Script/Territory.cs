@@ -6,8 +6,8 @@ public class Territory : MonoBehaviour
 {
     #region PlayerParameter
 
-    [Header ("Speed")]
-    [Space (1)]
+    [Header("Speed")]
+    [Space(1)]
     [SerializeField] float moveSpeed;
     public float recoveryTime = 1.0f;
     [Space(10)]
@@ -82,6 +82,10 @@ public class Territory : MonoBehaviour
     // Time
     private float currentTime;
     // Start is called before the first frame update
+    // Create a list of minions to know if they are inside the box when I move
+    private List<MinionTargeting> minionsInside = new();
+    // Circle Controller Script
+    [SerializeField] CircleController circleController;
 
     //get last position
     private Vector3 lastPosition;
@@ -119,7 +123,7 @@ public class Territory : MonoBehaviour
     void Update()
     {
         //
-        if(isMouseDragging == false)
+        if (isMouseDragging == false)
         {
             if (canSpawn == true)
             {
@@ -129,8 +133,8 @@ public class Territory : MonoBehaviour
                 {
                     currentTime = spawnInterval;
                     // Invoke Minions
-                    InstantiateTroop(minions);
-                    
+                    InstantiateTroop(minions, transform);
+
                 }
                 else
                 {
@@ -195,6 +199,19 @@ public class Territory : MonoBehaviour
 
         PlaySoundOneShot(territoryDeployement);
 
+        // Process gold for all minions in the list
+        foreach (MinionTargeting minionTargeting in minionsInside)
+        {
+            // Process gold for each minion (you can customize this)
+            ProcessGold(minionTargeting.GetGoldAmount());
+
+            // Now, you might want to remove the gold from the minion or handle it in MinionScript
+            minionTargeting.RemoveGold();
+        }
+
+        // Clear the list after processing gold for all minions
+        minionsInside.Clear();
+
         // Activate Spawning
         if (!isMouseDragging)
         {
@@ -207,7 +224,7 @@ public class Territory : MonoBehaviour
 
         recoveryBar.gameObject.SetActive(true); // make recovery bar visible
     }
-    
+
     private void OnMouseDrag()
     {
         isMouseDragging = true;
@@ -215,19 +232,20 @@ public class Territory : MonoBehaviour
         // Get the Mouse Position
         Vector3 mousePosition_ = Input.mousePosition;
         mousePosition_.z = 0;
-        
+
         // Then get The World Mouse Position
         Vector3 worldMousePosition_ = Camera.main.ScreenToWorldPoint(mousePosition_);
         worldMousePosition_.z = 0;
-        
+
         // Assign the Position to the object and Lerp by the Vitesse Deplacement
         transform.position = Vector3.Lerp(transform.position, worldMousePosition_, moveSpeed * Time.deltaTime);
-        
+
         // Debug.Log("Position de la souris : " + worldMousePosition);
     }
 
     #endregion
 
+    #region Sounds
     private void PlaySoundOneShot(AudioClip sound)
     {
         if (audioSource != null)
@@ -243,7 +261,9 @@ public class Territory : MonoBehaviour
             Debug.Log("No AudioClip have been detected");
         }
     }
-    
+
+    #endregion
+
     private void CalculateSpawnRadius()
     {
         // Calculate the spawnRadius depending of the size of the circle
@@ -251,7 +271,7 @@ public class Territory : MonoBehaviour
         spawnRadius = circleRadius;
     }
 
-    private void InstantiateTroop(GameObject troop)
+    private void InstantiateTroop(GameObject troop, Transform target)
     {
         // Get a random angle within the circular sector
         float randomAngle = Random.Range(0f, 360f);
@@ -259,9 +279,20 @@ public class Territory : MonoBehaviour
         // Calculate the spawn position based on the random angle, inner, and outer radii
         Vector3 spawnPosition_ = transform.position + Quaternion.Euler(0f, 0f, randomAngle) * Vector3.right * Random.Range(innerRadius, spawnRadius);
 
-        // We will instantiate Troop each time the slider ends, getting the range of the territory
-        Instantiate(troop, spawnPosition_, Quaternion.identity);
+        // Instantiate Troop at the calculated position
+        GameObject newTroop = Instantiate(troop, spawnPosition_, Quaternion.identity);
+
+        // Assuming the troop has a MinionTargeting component
+        MinionTargeting minionTargeting = newTroop.GetComponent<MinionTargeting>();
+
+        // Set the target for the minion
+        if (minionTargeting != null)
+        {
+            minionTargeting.SetTarget(target);
+        }
     }
+
+    #region Draw
 
     private void OnDrawGizmos()
     {
@@ -273,6 +304,8 @@ public class Territory : MonoBehaviour
         Gizmos.color = Color.red; // You can choose any color
         Gizmos.DrawWireSphere(transform.position, innerRadius);
     }
+
+    #endregion
 
     private void TakeDamage(float damageAmount)
     {
@@ -291,30 +324,57 @@ public class Territory : MonoBehaviour
         // Spawn UI like Game Over if it's the last territory
     }
 
+    #region Collisions
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check if the entering collider has the "Minion" tag
-        if (other.CompareTag("Minion"))
+        if (isMouseDragging == false)
         {
-            // Assuming minions have a script called MinionTargeting
-            MinionTargeting minionTargeting = other.GetComponent<MinionTargeting>();
+            // Check if the entering collider has the "Minion" tag
+            if (other.CompareTag("Minion"))
+            {
+                // Assuming minions have a script called MinionTargeting
+                MinionTargeting minionTargeting = other.GetComponent<MinionTargeting>();
 
-            // Check if the minion has gold
+                // Check if the minion has gold
+                if (minionTargeting != null && minionTargeting.HasGold())
+                {
+                    // Do something when a minion with gold enters the territory
+                    // For example, call a method to process the gold
+                    ProcessGold(minionTargeting.GetGoldAmount());
+
+                    // Now, you might want to remove the gold from the minion or handle it in MinionScript
+                    minionTargeting.RemoveGold();
+                }
+            }
+        }
+        else
+        {
+            // Add the minion to the list of minions inside the trigger zone
+            MinionTargeting minionTargeting = other.GetComponent<MinionTargeting>();
             if (minionTargeting != null && minionTargeting.HasGold())
             {
-                // Do something when a minion with gold enters the territory
-                // For example, call a method to process the gold
-                ProcessGold(minionTargeting.GetGoldAmount());
-
-                // Now, you might want to remove the gold from the minion or handle it in MinionScript
-                minionTargeting.RemoveGold();
+                minionsInside.Add(minionTargeting);
             }
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Minion"))
+        {
+            MinionTargeting minionTargeting = other.GetComponent<MinionTargeting>();
+            // Remove the minion from the list when it exits the trigger zone
+            minionsInside.Remove(minionTargeting);
+        }
+    }
+
+    #endregion
     private void ProcessGold(float goldAmount)
     {
         // Implement the logic to process gold here
-        // For example, add it to the territory's gold amount
+        circleController.UpgradeTerritory(goldAmount);
+        Debug.Log("Number of Gold : " + goldAmount); // Debug
     }
+
 }

@@ -32,7 +32,7 @@ public class CircleController : MonoBehaviour
     }
 
     // Called when a minion give to the territory center point the ressource
-    private void UpgradeTerritory(float gold)
+    public void UpgradeTerritory(float gold)
     {
         // Increase circleScale based on the amount of gold and upgrade step
         circleScale += gold * upgradeStep;
