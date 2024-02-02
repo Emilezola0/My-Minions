@@ -140,6 +140,12 @@ public class TerritoryEditor : Editor
                 EditorGUILayout.PropertyField(spawnRadiusProp);
             }
 
+            SerializedProperty circleControllerProp = serializedObject.FindProperty("circleController");
+            if (circleControllerProp != null)
+            {
+                EditorGUILayout.PropertyField(circleControllerProp);
+            }
+
             // Repeat the above pattern for other private variables...
         }
 
