@@ -23,12 +23,9 @@ public class Generator : MonoBehaviour
     [SerializeField] GameObject obstacle;
 
     [SerializeField] Tilemap groundTilemap;
-    [SerializeField] Tilemap obstacleTilemap;
     [SerializeField] Tilemap ressourcesTilemap;
 
     [SerializeField] Tile groundTile;
-    [SerializeField] Tile obstacleTile;
-    [SerializeField] Tile ressourceTile;
     [SerializeField] Vector3Int tileLocation;
 
     private void Start()
@@ -46,6 +43,7 @@ public class Generator : MonoBehaviour
             {
                 tileLocation = new Vector3Int(i, j, 0);
                 groundTilemap.SetTile(tileLocation, groundTile); //Set the tile
+                GetTileAtLocation(tileLocation);
             }
         }
     }
@@ -59,9 +57,21 @@ public class Generator : MonoBehaviour
 
     void SpawnObstacles(float SpawnChances_)
     {
-        if (DoesSpawn(SpawnChances_)) //Decides if the obstacle spawns or not
+        for (int i = 0; i < sizeX; i++)
         {
-            GameObject obstacle_ = GameObject.Instantiate(obstacle/*, .transform*/);
+            for (int j = 0; j < sizeY; j++)
+            {
+
+                if (DoesSpawn(SpawnChances_)) //Decides if the obstacle spawns or not
+                {
+                    tileLocation = groundTilemap.WorldToCell(new Vector2(i + 0.5f ,j + 0.5f));
+                    
+                    GameObject obstacle_ = GameObject.Instantiate(obstacle);
+                    obstacle_.transform.position = groundTilemap.WorldToCell(tileLocation);
+
+                    //Need to be destroyed if collide with a ressource
+                }
+            }
         }
     }
 
@@ -90,16 +100,11 @@ public class Generator : MonoBehaviour
         else return false;
     }
 
-    Vector2 GetPlayerSpawn()
-    {
-        return playerSpawn.transform.position;
-    }
-
     #endregion
 
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(transform.position, new Vector2(sizeX, sizeY));
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(new Vector2(transform.position.x + 50, transform.position.y + 50 ), new Vector3(sizeX, sizeY, 10));
     }
 }
