@@ -72,7 +72,7 @@ public class Territory : MonoBehaviour
     // Private Audio
     private AudioSource audioSource;
     // Line Renderer
-    private float spawnRadius;
+    [SerializeField] private float spawnRadius;
     private LineRenderer lineRenderer;
     // Spawn & Mouse
     private bool canSpawn = true;
@@ -155,6 +155,8 @@ public class Territory : MonoBehaviour
                 }
             }
         }
+
+        CalculateSpawnRadius();
     }
 
     #region MouseEvent
@@ -287,5 +289,32 @@ public class Territory : MonoBehaviour
     {
         // Make effect of explosion like the territory is detroy
         // Spawn UI like Game Over if it's the last territory
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if the entering collider has the "Minion" tag
+        if (other.CompareTag("Minion"))
+        {
+            // Assuming minions have a script called MinionTargeting
+            MinionTargeting minionTargeting = other.GetComponent<MinionTargeting>();
+
+            // Check if the minion has gold
+            if (minionTargeting != null && minionTargeting.HasGold())
+            {
+                // Do something when a minion with gold enters the territory
+                // For example, call a method to process the gold
+                ProcessGold(minionTargeting.GetGoldAmount());
+
+                // Now, you might want to remove the gold from the minion or handle it in MinionScript
+                minionTargeting.RemoveGold();
+            }
+        }
+    }
+
+    private void ProcessGold(float goldAmount)
+    {
+        // Implement the logic to process gold here
+        // For example, add it to the territory's gold amount
     }
 }

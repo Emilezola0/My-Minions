@@ -3,18 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyTargeting : MonoBehaviour
+public class MinionTargeting : MonoBehaviour
 {
     [SerializeField] AIDestinationSetter aIDestinationSetter;
-    
+
     [Space(5)]
     [Header("<b>Choose Target with :</b>")]
     [Space(2)]
 
     [SerializeField] private string[] targetTags; // Add your desired tags to this array
     [SerializeField] private LayerMask targetLayer; // Change this to your desired layer
+    [SerializeField] private float goldAmount;
 
-    private void Update()
+
+    private void CustomUpdate()
     {
         FindNearestTarget();
     }
@@ -52,5 +54,25 @@ public class EnemyTargeting : MonoBehaviour
             aIDestinationSetter.target = nearestTarget.transform;
             // Example: GetComponent<AIDestinationSetter>().SetTarget(nearestTarget.transform);
         }
+    }
+
+    public bool HasGold()
+    {
+        // Implement the logic to check if the minion has gold
+        // For example, return true if goldAmount is greater than 0
+        return goldAmount > 0;
+    }
+
+    public float GetGoldAmount()
+    {
+        // Return the gold amount
+        return goldAmount;
+    }
+
+    public void RemoveGold()
+    {
+        // Implement the logic to remove gold from the minion
+        // For example, set goldAmount to 0
+        goldAmount = 0;
     }
 }

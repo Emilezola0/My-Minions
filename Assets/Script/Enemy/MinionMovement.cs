@@ -4,7 +4,7 @@ using UnityEngine;
 using Pathfinding;
 using System;
 
-public class EnemyMovement : MonoBehaviour
+public class MinionTargeting : MonoBehaviour
 {
 
     public AIPath aIPath;
