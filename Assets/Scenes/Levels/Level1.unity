@@ -3843,6 +3843,10 @@ PrefabInstance:
       propertyPath: cameraRef
       value: 
       objectReference: {fileID: 1722450685}
+    - target: {fileID: 5521329568511723319, guid: f6d33c3bac56b6343806a416ea1e1358, type: 3}
+      propertyPath: speedProgressionFactor
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 6357508284010576691, guid: f6d33c3bac56b6343806a416ea1e1358, type: 3}
       propertyPath: cameraRef
       value: 
