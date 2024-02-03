@@ -6,7 +6,7 @@ public class CircleController : MonoBehaviour
 {
     #region CircleParameter
 
-    [Header("<b>Cicle Parameter : </b>")]
+    [Header("<b>Circle Parameter : </b>")]
     [Space(2)]
     public float circleScale;
 
@@ -25,9 +25,9 @@ public class CircleController : MonoBehaviour
     #region UpgradesPublicVar
 
     [Space(10)]
-    [Header("<b>Upgrades : </b>")] 
+    [Header("<b>Upgrades : </b>")]
     [Space(2)]
-    // At witch state the territory Cleanse
+    // At which state the territory Cleanse
     public float cleanseLevel;
     public float upgradeStep; // Amount of circleScale increase per unit of gold
 
@@ -43,6 +43,17 @@ public class CircleController : MonoBehaviour
 
     #endregion
 
+    #region CircleProgression
+
+    [Space(10)]
+    [Header("<b>Circle Progression : </b>")]
+    [Space(2)]
+    // Add Circle Progression Factor to control the circle growth per level
+    public float baseProgressionFactor; // Base factor
+    public float levelMultiplier; // Multiplier based on level
+
+    #endregion
+
     // Level
     [HideInInspector] public float level = 0;
 
@@ -55,7 +66,6 @@ public class CircleController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         circleScale = startCircleScale;
 
         // Need Line Renderer Attached
@@ -75,17 +85,18 @@ public class CircleController : MonoBehaviour
         lineRenderer.SetPosition(1, newPosition_);
     }
 
-    // Called when a minion give to the territory center point the ressource
+    // Called when a minion gives to the territory center point the resource
     public void UpgradeTerritory(float gold)
     {
         // Increase circleScale based on the amount of gold and upgrade step
         circleScale += gold * upgradeStep;
 
         // Update the Line Renderer width
-        lineRenderer.startWidth = lineRenderer.endWidth = circleScale;
+        lineRenderer.startWidth = lineRenderer.endWidth = circleScale + (level * levelMultiplier);
 
         if (circleScale >= cleanseLevel)
         {
+            cleanseLevel = cleanseLevel + (level * levelMultiplier);
             Cleanse();
         }
     }
@@ -108,15 +119,16 @@ public class CircleController : MonoBehaviour
             }
         }
 
-        // Make the circle scale comming back to the starting circle scale
+        // Make the circle scale come back to the starting circle scale
         circleScale = startCircleScale;
-        
+
         // Need Line Renderer Attached
         lineRenderer = GetComponent<LineRenderer>();
 
         // Circle Growth modifying the width of the Line Renderer
         lineRenderer.startWidth = lineRenderer.endWidth = circleScale;
 
-        level += 1;
+        // Increase the level based on the progression factor
+        startCircleScale = startCircleScale + baseProgressionFactor;
     }
 }
