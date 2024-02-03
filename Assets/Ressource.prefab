@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 281985748438692043}
   - component: {fileID: 5224472137895881183}
   - component: {fileID: 8771895983284062212}
+  - component: {fileID: -7384887752201644877}
   m_Layer: 0
   m_Name: Ressource
-  m_TagString: Untagged
+  m_TagString: Gold
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -130,3 +131,23 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.16}
   m_EdgeRadius: 0
+--- !u!114 &-7384887752201644877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2951515025675591610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ed14594202478d45bd0b7835f35ce9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldAmount: 4
+  spriteRenderer: {fileID: 5224472137895881183}
+  sprites:
+  - {fileID: 834364642, guid: e695101f84f57b5429ad5eb221f43319, type: 3}
+  - {fileID: -257337182, guid: e695101f84f57b5429ad5eb221f43319, type: 3}
+  thresholdValues:
+  - 5
+  - 10
