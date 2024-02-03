@@ -204,18 +204,24 @@ public class Territory : MonoBehaviour
 
         PlaySoundOneShot(territoryDeployement);
 
+        // Create a separate list to store minions that need to be processed
+        List<MinionTargeting> minionsToProcess = new List<MinionTargeting>(minionsInside);
+
         // Process gold for all minions in the list
-        foreach (MinionTargeting minionTargeting in minionsInside)
+        foreach (MinionTargeting minionTargeting in minionsToProcess)
         {
             // Process gold for each minion (you can customize this)
             ProcessGold(minionTargeting.GetGoldAmount());
 
             // Now, you might want to remove the gold from the minion or handle it in MinionScript
             minionTargeting.RemoveGold();
+
+            // Remove the minion from the original list
+            minionsInside.Remove(minionTargeting);
         }
 
         // Clear the list after processing gold for all minions
-        minionsInside.Clear();
+        minionsToProcess.Clear();
 
         // Activate Spawning
         if (!isMouseDragging)
