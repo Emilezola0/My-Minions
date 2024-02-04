@@ -16,8 +16,6 @@ public class ConsumeManager : MonoBehaviour
         else if (Instance != null && Instance != this)
             Destroy(this);
         DontDestroyOnLoad(Instance);
-
-        Debug.Log(Instance);
     }
 
     #endregion
@@ -27,6 +25,7 @@ public class ConsumeManager : MonoBehaviour
     [SerializeField] Color minConsumeColor, maxConsumeColor, clearColor;
 
     Dictionary<Vector3Int, float> consumedTiles = new Dictionary<Vector3Int, float>();
+    Dictionary<Vector3Int, bool> isTileConsumed = new Dictionary<Vector3Int, bool>();
 
     public void AddConsume(Vector2 worldPosition, float consumeAmount, int radius)
     {
@@ -46,7 +45,6 @@ public class ConsumeManager : MonoBehaviour
             }
         }
 
-
         ChangeConsume(gridPosition, consumeAmount);
         //Visualize the changes, can be suppr from this place, but it is easier to let it her
         VisualizeConsume();
@@ -54,14 +52,18 @@ public class ConsumeManager : MonoBehaviour
 
     void ChangeConsume(Vector3Int gridPosition, float changeBy)
     {
-        if(!consumedTiles.ContainsKey(gridPosition))
+        if (!consumedTiles.ContainsKey(gridPosition))
+        {
             consumedTiles.Add(gridPosition, 0f);
+            isTileConsumed.Add(gridPosition, true);
+        }
 
         float newValue = consumedTiles[gridPosition] + changeBy;
 
         if(newValue <= 0f)
         {
             consumedTiles.Remove(gridPosition);
+            isTileConsumed.Remove(gridPosition);
 
             ConsumeMap.SetTileFlags(gridPosition, TileFlags.None);
             ConsumeMap.SetColor(gridPosition, clearColor);
@@ -82,5 +84,23 @@ public class ConsumeManager : MonoBehaviour
             ConsumeMap.SetColor(entry.Key, newTileColor);
             ConsumeMap.SetTileFlags(entry.Key, TileFlags.LockColor);
         }
+    }
+
+    public bool CheckConsume(Vector2 worldPosition)
+    {
+        Vector3Int gridPosition = ConsumeMap.WorldToCell(worldPosition);
+
+        if(!isTileConsumed.ContainsKey(gridPosition))
+            return false;
+        else return isTileConsumed[gridPosition];
+    }
+
+    public float GetTileConsumeAmout(Vector2 worldPosition)
+    {
+        Vector3Int gridPosition = ConsumeMap.WorldToCell(worldPosition);
+
+        if (isTileConsumed.ContainsKey(gridPosition))
+            return consumedTiles[gridPosition];
+        else return 0f;
     }
 }

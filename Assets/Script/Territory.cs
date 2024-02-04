@@ -41,7 +41,7 @@ public class Territory : MonoBehaviour
     [Header("Minions")]
     [Space(1)]
     public GameObject minions;
-    public float spawnInterval = 5.0f;
+    public float spawnRate = 1;
     [Space(10)]
 
     #endregion
@@ -111,7 +111,7 @@ public class Territory : MonoBehaviour
         healthBar.UpdateHealthBar(health, maxHealth);
 
         // Set Spawning UI
-        currentTime = spawnInterval;
+        currentTime = spawnRate;
 
         // Set RecoveryTime Inactive (only activate on use)
         timeSinceMouseUp = 0;
@@ -134,7 +134,8 @@ public class Territory : MonoBehaviour
                 // If the invocation time has elapsed
                 if (currentTime <= 0)
                 {
-                    currentTime = spawnInterval;
+                    spawnRate = Mathf.Clamp01(spawnRate) * (consumeManager.GetTileConsumeAmout(transform.position) / consumeManager.maxConsume); //Determine spawnRate by the tile consumation value
+                    currentTime = spawnRate;
                     // Invoke Minions
                     InstantiateTroop(minions, transform);
 
@@ -143,7 +144,7 @@ public class Territory : MonoBehaviour
                 {
                     // Decrement invocation time
                     currentTime -= Time.deltaTime;
-                    productionBar.UpdateProductionBar(currentTime, spawnInterval);
+                    productionBar.UpdateProductionBar(currentTime, spawnRate);
                 }
             }
             // If you cannot summon, count the time since the last minion.
@@ -162,9 +163,8 @@ public class Territory : MonoBehaviour
                 }
             }
 
-
+            //Territory consumes tiles with time
             consumeManager.AddConsume(transform.position, consumeAmount, (int)spawnRadius); //spawnRadius convert to int for the tile map
-            print(consumeAmount);
         }
 
         CalculateSpawnRadius();
@@ -203,6 +203,14 @@ public class Territory : MonoBehaviour
             // If colliding with the "Environment" layer, update the territory position to the last position
             transform.position = lastPosition;
         }
+
+        if (consumeManager.CheckConsume(transform.position))
+        {
+            // If the tile is already consumed, return to the last position
+            transform.position = lastPosition;
+        }
+
+
 
         PlaySoundOneShot(territoryDeployement);
 
@@ -381,7 +389,6 @@ public class Territory : MonoBehaviour
     {
         // Implement the logic to process gold here
         circleController.UpgradeTerritory(goldAmount);
-        Debug.Log("Number of Gold : " + goldAmount); // Debug
     }
 
 }
