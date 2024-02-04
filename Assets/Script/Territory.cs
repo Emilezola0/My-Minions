@@ -9,7 +9,8 @@ public class Territory : MonoBehaviour
     [Header("Speed")]
     [Space(1)]
     [SerializeField] float moveSpeed;
-    public float recoveryTime = 1.0f;
+    [SerializeField] float recoveryTime = 1.0f;
+    [SerializeField] float consumeAmount = 1f;
     [Space(10)]
 
     #endregion
@@ -86,6 +87,7 @@ public class Territory : MonoBehaviour
     private List<MinionTargeting> minionsInside = new();
     // Circle Controller Script
     [SerializeField] CircleController circleController;
+    ConsumeManager consumeManager;
 
     //get last position
     private Vector3 lastPosition;
@@ -102,6 +104,7 @@ public class Territory : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         lineRenderer = territoryCircle.GetComponent<LineRenderer>();
+        consumeManager = ConsumeManager.Instance;
 
         // Update health bar hp on start
         health = maxHealth;
@@ -117,9 +120,9 @@ public class Territory : MonoBehaviour
 
         // Calculate Spawn Radius
         CalculateSpawnRadius();
-
     }
-    // Update is called once per frame
+
+
     void Update()
     {
         //
@@ -158,6 +161,10 @@ public class Territory : MonoBehaviour
                     recoveryBar.UpdateRecoveryBar(timeSinceMouseUp, recoveryTime);
                 }
             }
+
+
+            consumeManager.AddConsume(transform.position, consumeAmount, (int)spawnRadius); //spawnRadius convert to int for the tile map
+            print(consumeAmount);
         }
 
         CalculateSpawnRadius();
