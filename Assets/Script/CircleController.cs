@@ -63,9 +63,12 @@ public class CircleController : MonoBehaviour
     // Start Circle Scale
     private float startCircleScale = 5.0f;
 
+    ConsumeManager consumeManager;
+
     // Start is called before the first frame update
     void Start()
     {
+        consumeManager = ConsumeManager.Instance;
         circleScale = startCircleScale;
 
         // Need Line Renderer Attached
@@ -118,6 +121,10 @@ public class CircleController : MonoBehaviour
                 Destroy(collider.gameObject); // You can replace this with whatever action you want
             }
         }
+
+        //Clean all tiles inside radius
+        consumeManager.CleanTiles(transform.position, (int)circleScale);
+        print("Clean tiles");
 
         // Make the circle scale come back to the starting circle scale
         circleScale = startCircleScale;

@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Pathfinding;
 using UnityEngine.UIElements;
 
 public class Generator : MonoBehaviour
@@ -20,22 +21,28 @@ public class Generator : MonoBehaviour
     [Range(0, 100)] public float obstacleSpawnChances;
 
     [SerializeField] GameObject[] spawnPoints;
-    [SerializeField] GameObject playerSpawn;
     [SerializeField] GameObject ressource;
     [SerializeField] GameObject obstacle;
 
     [SerializeField] Tilemap groundTilemap;
-    [SerializeField] Tilemap ressourcesTilemap;
 
     [SerializeField] Tile groundTile;
     [SerializeField] Tile goldTile;
     [SerializeField] Vector3Int tileLocation;
+
+    AstarPath astar;
 
     private void Start()
     {
         GenerateMap(sizeX, sizeY);
         SpawnRessources(ressourceSpawnChances);
         SpawnObstacles(obstacleSpawnChances);
+
+        astar = GameObject.Find("PathFinding").GetComponent<AstarPath>();
+
+        // Ensure the A* Pathfinding script is found
+        if (astar != null)
+            astar.Scan();
     }
 
     private void GenerateMap(int X, int Y)

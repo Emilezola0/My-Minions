@@ -64,15 +64,10 @@ public class GoldManager : MonoBehaviour
     float TakeGold()
     {
         // You can implement the logic to take gold from the GoldManager
-        // For now, let's assume we take all the gold
         float takenGold = goldAmount;
-        goldAmount = 0; // Set gold amount to 0 after taking
 
         // Update the sprite based on the new gold amount
         UpdateSpriteBasedOnGoldAmount();
-
-        // Destroy the GoldManager object
-        Destroy(gameObject);
 
         return takenGold;
     }

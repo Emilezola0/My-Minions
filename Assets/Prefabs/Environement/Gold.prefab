@@ -136,6 +136,6 @@ MonoBehaviour:
   goldAmount: 1
   spriteRenderer: {fileID: 4572903236005682319}
   sprites:
-  - {fileID: -2413806693520163455, guid: a81debd55aee7b74c9af97561229e774, type: 3}
+  - {fileID: 21300000, guid: 252391cf8b72fab4dae0a711f4359980, type: 3}
   thresholdValues:
   - 1

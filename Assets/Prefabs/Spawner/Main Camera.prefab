@@ -108,6 +108,6 @@ MonoBehaviour:
   zoomSpeed: 50
   minZoom: 2
   maxZoomIn: 5
-  maxZoomOut: 10
-  moveSpeed: 10
-  edgeDetectionDistance: 10
+  maxZoomOut: 35
+  moveSpeed: 15
+  edgeDetectionDistance: 15

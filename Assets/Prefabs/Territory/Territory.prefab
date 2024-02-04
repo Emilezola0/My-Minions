@@ -270,13 +270,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 30
   recoveryTime: 0
+  consumeAmount: 1
   health: 10
   maxHealth: 10
   healthBar: {fileID: 6357508284010576691}
   productionBar: {fileID: 3190179496301778512}
   recoveryBar: {fileID: 634497385338541929}
   minions: {fileID: 8759740514805692771, guid: a02cd1d8217767f4082b3c144e5f9ccd, type: 3}
-  spawnInterval: 2
+  spawnRate: 1
   territoryCircle: {fileID: 4591571869034654912}
   innerRadius: 1
   takingTerritory: {fileID: 8300000, guid: 40c1c1eb99d73034ab186ea4c38870af, type: 3}
@@ -774,6 +775,9 @@ MonoBehaviour:
   - Wall
   - Wood
   - Rock
+  baseProgressionFactor: 0
+  levelMultiplier: 0
+  level: 0
 --- !u!120 &3587527321882790512
 LineRenderer:
   serializedVersion: 2

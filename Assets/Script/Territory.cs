@@ -134,7 +134,7 @@ public class Territory : MonoBehaviour
                 // If the invocation time has elapsed
                 if (currentTime <= 0)
                 {
-                    spawnRate = Mathf.Clamp01(spawnRate) * (consumeManager.GetTileConsumeAmout(transform.position) / consumeManager.maxConsume); //Determine spawnRate by the tile consumation value
+                    spawnRate = (consumeManager.GetTileConsumeAmout(transform.position) / consumeManager.maxConsume); //Determine spawnRate by the tile consumation value
                     currentTime = spawnRate;
                     // Invoke Minions
                     InstantiateTroop(minions, transform);

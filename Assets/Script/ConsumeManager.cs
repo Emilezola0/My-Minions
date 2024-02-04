@@ -103,4 +103,22 @@ public class ConsumeManager : MonoBehaviour
             return consumedTiles[gridPosition];
         else return 0f;
     }
+
+    public void CleanTiles(Vector2 worldPosition, int radius)
+    {
+        Vector3Int gridPosition = ConsumeMap.WorldToCell(worldPosition);
+
+        for (int x = -radius; x <= radius; x++)
+        {
+            for (int y = -radius; y <= radius; y++)
+            {
+                Vector3Int nextTilePosition = new Vector3Int(gridPosition.x + x, gridPosition.y + y, 0);
+                ChangeConsume(nextTilePosition, 0f);
+            }
+        }
+
+        ChangeConsume(gridPosition, 0f);
+        //Visualize the changes, can be suppr from this place, but it is easier to let it her
+        VisualizeConsume();
+    }
 }
