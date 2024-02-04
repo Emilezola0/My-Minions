@@ -24,6 +24,12 @@ public class TerritoryEditor : Editor
             {
                 EditorGUILayout.PropertyField(moveSpeedProp);
             }
+            
+            SerializedProperty consumeAmountProp = serializedObject.FindProperty("consumeAmount");
+            if (consumeAmountProp != null)
+            {
+                EditorGUILayout.PropertyField(consumeAmountProp);
+            }
 
             SerializedProperty recoveryTimeProp = serializedObject.FindProperty("recoveryTime");
             if (recoveryTimeProp != null)

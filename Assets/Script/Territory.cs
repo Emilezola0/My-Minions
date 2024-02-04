@@ -9,9 +9,8 @@ public class Territory : MonoBehaviour
     [Header("Speed")]
     [Space(1)]
     [SerializeField] float moveSpeed;
-    public float recoveryTime = 1.0f;
-    // Add a public variable for the speed progression factor
-    public float speedProgressionFactor = 0.1f;
+    [SerializeField] float recoveryTime = 1.0f;
+    [SerializeField] float consumeAmount = 1f;
     [Space(10)]
 
     #endregion
@@ -88,6 +87,7 @@ public class Territory : MonoBehaviour
     private List<MinionTargeting> minionsInside = new();
     // Circle Controller Script
     [SerializeField] CircleController circleController;
+    ConsumeManager consumeManager;
 
     //get last position
     private Vector3 lastPosition;
@@ -104,6 +104,7 @@ public class Territory : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         lineRenderer = territoryCircle.GetComponent<LineRenderer>();
+        consumeManager = ConsumeManager.Instance;
 
         // Update health bar hp on start
         health = maxHealth;
@@ -119,9 +120,9 @@ public class Territory : MonoBehaviour
 
         // Calculate Spawn Radius
         CalculateSpawnRadius();
-
     }
-    // Update is called once per frame
+
+
     void Update()
     {
         //
@@ -130,22 +131,19 @@ public class Territory : MonoBehaviour
             if (canSpawn == true)
             {
                 timeSinceMouseUp = 0;
-
-                // Calculate the current spawn interval based on the level and progression factor
-                float currentSpawnInterval = spawnInterval - (circleController.level * speedProgressionFactor);
-
                 // If the invocation time has elapsed
                 if (currentTime <= 0)
                 {
-                    currentTime = currentSpawnInterval;
+                    currentTime = spawnInterval;
                     // Invoke Minions
                     InstantiateTroop(minions, transform);
+
                 }
                 else
                 {
                     // Decrement invocation time
                     currentTime -= Time.deltaTime;
-                    productionBar.UpdateProductionBar(currentTime, currentSpawnInterval);
+                    productionBar.UpdateProductionBar(currentTime, spawnInterval);
                 }
             }
             // If you cannot summon, count the time since the last minion.
@@ -163,6 +161,10 @@ public class Territory : MonoBehaviour
                     recoveryBar.UpdateRecoveryBar(timeSinceMouseUp, recoveryTime);
                 }
             }
+
+
+            consumeManager.AddConsume(transform.position, consumeAmount, (int)spawnRadius); //spawnRadius convert to int for the tile map
+            print(consumeAmount);
         }
 
         CalculateSpawnRadius();
@@ -204,24 +206,18 @@ public class Territory : MonoBehaviour
 
         PlaySoundOneShot(territoryDeployement);
 
-        // Create a separate list to store minions that need to be processed
-        List<MinionTargeting> minionsToProcess = new List<MinionTargeting>(minionsInside);
-
         // Process gold for all minions in the list
-        foreach (MinionTargeting minionTargeting in minionsToProcess)
+        foreach (MinionTargeting minionTargeting in minionsInside)
         {
             // Process gold for each minion (you can customize this)
             ProcessGold(minionTargeting.GetGoldAmount());
 
             // Now, you might want to remove the gold from the minion or handle it in MinionScript
             minionTargeting.RemoveGold();
-
-            // Remove the minion from the original list
-            minionsInside.Remove(minionTargeting);
         }
 
         // Clear the list after processing gold for all minions
-        minionsToProcess.Clear();
+        minionsInside.Clear();
 
         // Activate Spawning
         if (!isMouseDragging)
@@ -381,8 +377,6 @@ public class Territory : MonoBehaviour
     }
 
     #endregion
-
-    // ProcessGold trigger also the Upgrade Territory inside the CircleController.cs
     private void ProcessGold(float goldAmount)
     {
         // Implement the logic to process gold here

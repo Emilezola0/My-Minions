@@ -13,7 +13,9 @@ public class Generator : MonoBehaviour
     [Range(0, 100)] public int sizeY;
 
     [Header("Ressources")]
-    [Range(1, 25)]  public int   numberOfRessources;
+    [Range(1, 25)]  public int   minRessources;
+    [Range(1, 25)]  public int   maxRessources;
+    int ressourceNbr = 0;
     [Range(0, 100)] public float ressourceSpawnChances;
     [Range(0, 100)] public float obstacleSpawnChances;
 
@@ -26,6 +28,7 @@ public class Generator : MonoBehaviour
     [SerializeField] Tilemap ressourcesTilemap;
 
     [SerializeField] Tile groundTile;
+    [SerializeField] Tile goldTile;
     [SerializeField] Vector3Int tileLocation;
 
     private void Start()
@@ -43,14 +46,8 @@ public class Generator : MonoBehaviour
             {
                 tileLocation = new Vector3Int(i, j, 0);
                 groundTilemap.SetTile(tileLocation, groundTile); //Set the tile
-                GetTileAtLocation(tileLocation);
             }
         }
-    }
-
-    void GetTileAtLocation(Vector3 position)
-    {
-        tileLocation = groundTilemap.WorldToCell(position); //Register the tile position on the tilemap
     }
 
     #region Spawns
@@ -69,6 +66,12 @@ public class Generator : MonoBehaviour
                     GameObject obstacle_ = GameObject.Instantiate(obstacle);
                     obstacle_.transform.position = groundTilemap.WorldToCell(tileLocation);
 
+                    if (groundTilemap.GetTile(tileLocation) == goldTile)
+                    {
+                        Destroy(obstacle_);
+                    }
+
+
                     //Need to be destroyed if collide with a ressource
                 }
             }
@@ -78,18 +81,25 @@ public class Generator : MonoBehaviour
     void SpawnRessources(float SpawnChances_)
     {
 
-        for (int i = 0; i < numberOfRessources; i++)
+        for (int i = 0; i < maxRessources; i++)
         {
             if (DoesSpawn(SpawnChances_)) //Decides if the ressource spawns or not
             {
+                ressourceNbr++;
                 tileLocation = groundTilemap.WorldToCell(spawnPoints[i].transform.position);
 
                 GameObject ressource_ = GameObject.Instantiate(ressource, spawnPoints[i].transform);
                 ressource_.transform.position = tileLocation;
 
-                //Need to be generated only inside the groundTilemap
+                groundTilemap.SetTile(tileLocation, goldTile);
             }
         }
+
+        //if (ressourceNbr < minRessources)
+        //{
+        //    Debug.Log("ressourceNbr :" + ressourceNbr);
+        //    SpawnRessources(SpawnChances_);
+        //}
     }
 
     bool DoesSpawn(float spawnChances)
@@ -101,10 +111,4 @@ public class Generator : MonoBehaviour
     }
 
     #endregion
-
-    public void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(new Vector2(transform.position.x + 50, transform.position.y + 50 ), new Vector3(sizeX, sizeY, 10));
-    }
 }
